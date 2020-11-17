@@ -9,10 +9,8 @@ router.get("/", (req, res) => {
         .find()
         .toArray((err, datos) => {
         if(err!=null) {
-            console.log(err);
             res.send(err);
         } else {
-            console.log(datos);
             res.send(datos);
         }
     });
@@ -41,7 +39,7 @@ router.post("/registrar", (req, res) => {
         }
     });
 });
-    
+   
 /* MODIFICAR LOS DATOS DEL CLIENTE */
 router.put("/editar", function (req, res) {
     const dni = req.body.dni;
@@ -51,13 +49,13 @@ router.put("/editar", function (req, res) {
 let db = req.app.locals.db;
     db.collection("clientes")
     .updateOne(
-        { dni: dni },
-        {
-            $set: {
+        { dni: dni }, {
+            $set:
+            {
                 nombre: nombre,
                 apellido: apellido
             }
-        },
+    },
     (err, datos) => {
       if (err !== null) {
         res.send(err);
@@ -67,8 +65,6 @@ let db = req.app.locals.db;
         }
     });
 }); 
-
-
 
 
 module.exports = router;

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Hotel</title>
+</head>
+
+<body>
+    <header>
+        <h1>Hotel</h1>
+    </header>
+
+    <main>
+        <div class="">
+
+            <!--  AÑADIR Y EDITAR CLIENTE  -->
+            <div class="formulario">
+                <h3>Cliente</h3>
+                <div class="inline row">
+                    <input id="nombre" type="text" placeholder="Nombre" />
+                    <input id="apellido" type="text" placeholder="Apellido" />
+                    <input id="dni" type="text" placeholder="DNI con letra" />
+                </div>
+                <button onclick="addCliente()">AÑADIR</button>
+                <button onclick="editCliente()">EDITAR</button>
+            </div>
+
+
+            <!--  AÑADIR RESERVA - CHECK-IN  -->
+            <div class="formulario">
+                <h3>Reserva</h3>
+                <div class="inline row">
+                    <input id="nombreReserva" type="text" placeholder="Nombre" />
+                    <input id="apellidoReserva" type="text" placeholder="Apellido" />
+                    <input id="dniReserva" type="text" placeholder="DNI con letra" />
+                    <input id="checkInReserva" type="text" placeholder="Fecha entrada" />
+                    <input id="checkOutReserva" type="text" placeholder="Fecha salida" />
+                </div>
+                <button onclick="addReserva()">Check IN</button>
+                <button onclick="editReserva()">Check OUT</button>
+
+            </div>
+
+            <div id="mensaje"></div>
+
+            <div id="resultado"></div>
+
+
+    </main>
+
+
+
+
+    <script src="./index.js"></script>
+</body>
+
+</html>

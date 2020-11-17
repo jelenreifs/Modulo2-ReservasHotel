@@ -23,53 +23,95 @@ router.get("/", (req, res) => {
     });
 });
 
+
+
 /* AÑADIR UNA RESERVA */
 router.post("/alta", (req, res) => {
-
-    const reserva = {
-        dni: req.body.dni,
-        habitacion: req.body.habitacion,
-        checkIn: req.body.checkIn,
-        checkOut: req.body.checkOut
-    }  
-
-     let db = req.app.locals.db;
-        db.collection("clientes")
-            .find({ dni : dni}, function (err, datos){
-                if (err != null) {
-                    console.log(err);
-                    res.send({ mensaje: "No hay cliente registrado " + err });
+    const reserva = req.body
+    
+    let db = req.app.locals.db;
+    db.collection("clientes")
+        .find({dni: reserva.dni }).toArray((err, cliente) => {
+            if (err != null) {
+                res.send(err)
+            } else {
+                if (cliente.length === 0) {
+                    res.send({ mensaje: "No hay cliente registrado " });
                 } else {
                     db.collection("habitaciones")
-                        .find({
-                            $and: [
-                                { habitacion: habitacion },
-                                { estado: "disponible" }
-                            ]
-                        }), function (err, data) {
+                        .find({ numero: reserva.numero }).toArray((err, habitacion) => {
                             if (err != null) {
-                                console.log(err);
-                                res.send({ mensaje: "La habitación está ocupada " + err });
+                                res.send(err);
                             } else {
-                                db.collection("reservas")
-                                  .insertOne(reserva, (err, elemento) => {
-                                        if (err != null) {
-                                            console.log(err);
-                                            res.send({ mensaje: "La reserva no ha podido realizarse" + err });
-
-                                    res.send(err);
-                                        } else {
-                                            console.log(elemento);
-                                            console.log("La reserva se ha realizado correctamente");
-                                            res.send(elemento);
-                                        }
-                                    });
+                                if (habitacion[0].estado === "ocupado") {
+                                    res.send({ mensaje: "La habitación está ocupada " });
+                                } else {
+                                    db.collection("reservas")
+                                        .insertOne({ numero: reserva.numero, dni: reserva.dni, checkIn: reserva.checkIn }, (err, datos) => {
+                                            if (err != null) {
+                                                res.send(err);
+                                            } else {
+                                                db.collection("habitaciones")
+                                                    .updateOne({ numero: reserva.numero }, { $set: { estado: "ocupado" } }, (err, alta) => {
+                                                        if (err != null) {
+                                                            res.send(err);
+                                                        } else {
+                                                            res.send({ mensaje: "La reserva se ha realizado correctamente" });
+                                                        }
+                                                    }) //updateOne
+                                            }
+                                        }) // insertOne
                                 }
                             }
-                    }
-                });
-            });
+                        }) //find
+                }
+            }
+        }) //find
+    }) // POST
+                        
 
+
+/* MODIFICAR UNA RESERVA */
+router.put("/baja", (req, res) => {
+    const dni = req.body.dni
+    const checkOut = req.body.checkOut
+ 
+    let db = req.app.locals.db;
+    db.collection("reservas")
+        .find({ dni: dni }).toArray((err, reserva) => {
+            if (err != null) {
+                res.send(err);
+            } else {
+                // Comprobar que el dni existe
+                if (reserva.length === 0) {
+                    res.send({ mensaje: "No hay reserva realizada por este cliente" });
+                } else {
+                    db.collection("reservas")
+                        .updateOne({ dni: dni }, { $set: { checkOut: checkOut } }, (err, datos) => {
+                            if (err != null) {
+                                res.send(err);
+                            } else {
+                                db.collection("habitaciones")
+                                    .updateOne({ numero: reserva[0].numero }, { $set: { estado: "disponible" } }, (err, baja) => {
+                                        if (err != null) {
+                                            res.send(err);
+                                        } else {
+                                            res.send({ mensaje: "Esperamos que haya disfrutad ode sus estancia en nuestor hotel" });
+                                        }
+                                    }) //updateOne
+                            }
+                        }) // updateOne
+                }
+            }
+        }) // find
+     }) // PUT
+                         
+
+
+
+                 
+       
+  
 
 /* app.use("/clientes", clientes);
 app.use("/habitaciones", habitaciones);
